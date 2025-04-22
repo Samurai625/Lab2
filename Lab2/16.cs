@@ -4,60 +4,32 @@ class Task16
 {
     public static void Run()
     {
-        Console.Write("Введіть розмір матриці: ");
+        Console.Write("Введіть розмір квадратної матриці: ");
         int n = int.Parse(Console.ReadLine());
 
-        int[,] matrix = FillArr(n);
-        Console.WriteLine($"Матриця:");
-        PrintMatrix(matrix);
+        FillType fillType = MatrixUtils.AskFillType();
 
-        (int sum, int count) = CalculateNegativeElements(matrix);
+        int[,]? matrix = MatrixUtils.GetMatrix(n, n, fillType);
+        if (matrix == null) return;
+
+        Console.WriteLine("Матриця:");
+        MatrixUtils.PrintMatrix(matrix);
+
+        (int sum, int count) = CalculateNegativeBelowDiagonal(matrix);
+        Console.WriteLine($"Сума від'ємних: {sum}, Кількість: {count}");
     }
 
-     static int[,] FillArr(int n)
+    static (int sum, int count) CalculateNegativeBelowDiagonal(int[,] matrix)
     {
-        int[,] matrix = new int[n, n];
-        Random random = new Random();
-
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                matrix[i, j] = random.Next(-50, 51);
-            }
-        }
-
-        return matrix;
-    }
-
-    static void PrintMatrix(int[,] matrix)
-    {
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < matrix.GetLength(1); j++)
-            {
-                Console.Write($"{matrix[i, j] + "\t"}");
-            }
-            Console.WriteLine();
-        }
-    }
-    static(int sum,int count) CalculateNegativeElements(int[,] matrix)
-    {
-        int sum = 0;
-        int count = 0;
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
+        int sum = 0, count = 0;
+        for (int i = 1; i < matrix.GetLength(0); i++)
             for (int j = 0; j < i; j++)
-            {
                 if (matrix[i, j] < 0)
                 {
                     sum += matrix[i, j];
                     count++;
                 }
-            }
-        }
-        Console.WriteLine($"Сума від'ємних елементів: {sum}");
-        Console.WriteLine($"Кількість від'ємних елементів: {count}");
+
         return (sum, count);
     }
 }

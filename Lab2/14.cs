@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 
 class Task14
 {
@@ -9,88 +8,49 @@ class Task14
         int rows = int.Parse(Console.ReadLine());
         Console.Write("Введіть кількість стовпців: ");
         int cols = int.Parse(Console.ReadLine());
+        FillType fillType = MatrixUtils.AskFillType();
 
-        int[,] matrix = FillMatrix(rows, cols);
+        int[,]? matrix = MatrixUtils.GetMatrix(rows, cols, fillType);
+        if (matrix == null) return;
+
         Console.WriteLine("Початкова матриця:");
-        PrintMatrix(matrix);
+        MatrixUtils.PrintMatrix(matrix);
 
-        SortOddColumns(matrix, rows, cols);
+        SortOddAndEvenColumns(matrix, rows, cols);
 
-        SortEvenColumns(matrix, rows, cols);
         Console.WriteLine("Матриця після сортування:");
-        PrintMatrix(matrix);
+        MatrixUtils.PrintMatrix(matrix);
+    }
 
-        static int[,] FillMatrix(int rows, int cols)
-        {
-            int[,] matrix = new int[rows, cols];
-            Random random = new Random();
-            for (int i = 0; i < rows; i++)
+    static void SortColumns(int[,] matrix, int rows, int j, bool ascending)
+    {
+            for (int i = 0; i < rows - 1; i++)
             {
-                for (int j = 0; j < cols; j++)
+                for (int k = 0; k < rows - i - 1; k++)
                 {
-                    matrix[i, j] = random.Next(-50, 51);
-                }
-            }
+                    bool condition = ascending
+                        ? matrix[k, j] > matrix[k + 1, j]
+                        : matrix[k, j] < matrix[k + 1, j];
 
-            return matrix;
-        }
-
-        static void SortOddColumns(int[,] matrix, int rows, int cols)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                if ((j + 1) % 2 != 0)
-                {
-                    int[] column = new int[rows];
-                    for (int i = 0; i < rows; i++)
+                    if (condition)
                     {
-                        column[i] = matrix[i, j];
-                    }
-
-                    Array.Sort(column);
-                    for (int i = 0; i < rows; i++)
-                    {
-                        matrix[i, j] = column[i];
+                        Swap(matrix, k, k + 1, j);
                     }
                 }
             }
-        }
+    }
 
-        static void SortEvenColumns(int[,] matrix, int rows, int cols)
+    static void SortOddAndEvenColumns(int[,] matrix, int rows, int cols)
+    {
+        for(int j = 0; j < cols; j++)
         {
-            for (int j = 0; j < cols; j++)
-            {
-                if ((j + 1) % 2 == 0)
-                {
-                    int[] column = new int[rows];
-
-                    for (int i = 0; i < rows; i++)
-                    {
-                        column[i] = matrix[i, j];
-                    }
-
-                    Array.Sort(column);
-                    Array.Reverse(column);
-
-                    for (int i = 0; i < rows; i++)
-                    {
-                        matrix[i, j] = column[i];
-                    }
-                }
-            }
+            bool ascendindg = (j % 2 == 0);
+            SortColumns(matrix, rows, j, ascendindg);
         }
+    }
 
-        static void PrintMatrix(int[,] matrix)
-        {
-            for (int i = 0; i < matrix.GetLength(0); i++)
-            {
-                for (int j = 0; j < matrix.GetLength(1); j++)
-                {
-                    Console.Write($"{matrix[i, j] + "\t"}");
-                }
-
-                Console.WriteLine();
-            }
-        }
+    static void Swap(int[,] matrix, int i, int j, int col)
+    {
+        (matrix[i, col], matrix[j, col]) = (matrix[j, col], matrix[i, col]);
     }
 }

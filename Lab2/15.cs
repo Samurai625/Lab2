@@ -9,42 +9,18 @@ class Task15
         Console.Write("Введіть кількість стовпців: ");
         int cols = int.Parse(Console.ReadLine());
 
-        int[,] matrix = FillMatrix(rows, cols);
+        FillType fillType = MatrixUtils.AskFillType();
+
+        int[,]? matrix = MatrixUtils.GetMatrix(rows, cols, fillType);
+        if (matrix == null) return;
+
         Console.WriteLine("Початкова матриця:");
-        PrintMatrix(matrix);
+        MatrixUtils.PrintMatrix(matrix);
 
         SwapMinMaxInRows(matrix);
 
-        Console.WriteLine("Матриця після обміну мінімального та максимального елементів:");
-        PrintMatrix(matrix);
-    }
-
-    static int[,] FillMatrix(int rows, int cols)
-    {
-        int[,] matrix = new int[rows, cols];
-        Random random = new Random();
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                matrix[i, j] = random.Next(-50, 51);
-            }
-        }
-
-        return matrix;
-    }
-
-    static void PrintMatrix(int[,] matrix)
-    {
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < matrix.GetLength(1); j++)
-            {
-                Console.Write($"{matrix[i, j] + "\t"}");
-            }
-
-            Console.WriteLine();
-        }
+        Console.WriteLine("Матриця після обміну:");
+        MatrixUtils.PrintMatrix(matrix);
     }
 
     static void SwapMinMaxInRows(int[,] matrix)
@@ -54,25 +30,13 @@ class Task15
 
         for (int i = 0; i < rows; i++)
         {
-            int maxIndex = 0;
-            int minIndex = 0;
-
+            int min = 0, max = 0;
             for (int j = 1; j < cols; j++)
             {
-                if (matrix[i, j] > matrix[i, maxIndex])
-                {
-                    maxIndex = j;
-                }
-
-                if (matrix[i, j] < matrix[i, minIndex])
-                {
-                    minIndex = j;
-                }
+                if (matrix[i, j] < matrix[i, min]) min = j;
+                if (matrix[i, j] > matrix[i, max]) max = j;
             }
-
-            int temp = matrix[i, maxIndex];
-            matrix[i, maxIndex] = matrix[i, minIndex];
-            matrix[i, minIndex] = temp;
+            (matrix[i, min], matrix[i, max]) = (matrix[i, max], matrix[i, min]);
         }
     }
 }
